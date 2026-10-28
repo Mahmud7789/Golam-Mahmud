@@ -1,4 +1,5 @@
 import { ArrowUp, Download } from 'lucide-react';
+import { downloadCvPdf } from '../utils/cvDownloader';
 
 interface FooterProps {
   theme: 'light' | 'dark';
@@ -8,11 +9,16 @@ interface FooterProps {
   onOpenCV: () => void;
 }
 
-export function Footer({ theme, cvPdfUrl, onOpenDeploy, onOpenEditor, onOpenCV }: FooterProps) {
+export function Footer({ theme, onOpenDeploy, onOpenEditor, onOpenCV }: FooterProps) {
   const isLight = theme === 'light';
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleDownload = (e: React.MouseEvent) => {
+    e.preventDefault();
+    downloadCvPdf('Mahmud_IT_Officer.pdf');
   };
 
   return (
@@ -38,16 +44,16 @@ export function Footer({ theme, cvPdfUrl, onOpenDeploy, onOpenEditor, onOpenCV }
 
         {/* Center: Real action links */}
         <div className="flex items-center gap-4">
-          <a
-            href={cvPdfUrl}
-            download="Golam_Mahmud_IT_Officer_CV.pdf"
+          <button
+            onClick={handleDownload}
             className={`inline-flex items-center gap-1 transition-colors ${
               isLight ? 'hover:text-blue-600 text-slate-700 font-medium' : 'hover:text-cyan-400 text-zinc-300'
             }`}
+            title="Download Mahmud_IT_Officer.pdf"
           >
             <Download className="w-3 h-3 text-blue-600" />
             <span>PDF CV</span>
-          </a>
+          </button>
           <span aria-hidden="true" className={isLight ? 'text-slate-300' : 'text-zinc-700'}>·</span>
           <button
             onClick={onOpenCV}

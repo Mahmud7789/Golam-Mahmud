@@ -58,7 +58,7 @@ export function ProjectsSection({ projects, theme }: ProjectsSectionProps) {
                 isLight ? 'text-slate-600' : 'text-zinc-400'
               }`}
             >
-              Live applications hosted on Netlify and machine learning computer vision systems.
+              Live production applications, corporate web portals, and machine learning computer vision systems.
             </p>
           </div>
 
@@ -91,7 +91,7 @@ export function ProjectsSection({ projects, theme }: ProjectsSectionProps) {
         </div>
 
         {/* Dynamic Bento Box Showcase */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
           {filteredProjects.map((project) => (
             <div
               key={project.id}

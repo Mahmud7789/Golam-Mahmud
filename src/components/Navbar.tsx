@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { Menu, X, Sun, Moon, Download, Sliders } from 'lucide-react';
+import { Menu, X, Sun, Moon, Download, Sliders, CheckCircle, FileText } from 'lucide-react';
+import { downloadCvPdf } from '../utils/cvDownloader';
 
 export interface NavbarProps {
   theme: 'light' | 'dark';
   onToggleTheme: () => void;
   onOpenDeployModal?: () => void;
   onOpenEditorModal: () => void;
+  onOpenPdfPreview?: () => void;
   currentView: 'portfolio' | 'cv';
   onToggleView: (view: 'portfolio' | 'cv') => void;
   cvPdfUrl: string;
@@ -15,12 +17,20 @@ export function Navbar({
   theme,
   onToggleTheme,
   onOpenEditorModal,
+  onOpenPdfPreview,
   currentView,
   onToggleView,
-  cvPdfUrl,
 }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [downloadSuccess, setDownloadSuccess] = useState(false);
   const isLight = theme === 'light';
+
+  const handleDownloadCv = (e: React.MouseEvent) => {
+    e.preventDefault();
+    downloadCvPdf('Mahmud_IT_Officer.pdf');
+    setDownloadSuccess(true);
+    setTimeout(() => setDownloadSuccess(false), 2500);
+  };
 
   const handleNavClick = (sectionId: string) => {
     if (currentView === 'cv') {
@@ -127,15 +137,39 @@ export function Navbar({
           </button>
 
           {/* Download Official CV PDF button (Primary Action) */}
-          <a
-            href={cvPdfUrl}
-            download="Golam_Mahmud_IT_Officer_CV.pdf"
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 shadow-xs transition-colors whitespace-nowrap shrink-0"
+          <button
+            onClick={handleDownloadCv}
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 active:scale-95 shadow-xs transition-all whitespace-nowrap shrink-0"
             title="Download Mahmud's original official CV PDF"
           >
-            <Download className="w-3.5 h-3.5" />
-            <span>Official CV (PDF)</span>
-          </a>
+            {downloadSuccess ? (
+              <>
+                <CheckCircle className="w-3.5 h-3.5 text-emerald-200" />
+                <span>Downloaded!</span>
+              </>
+            ) : (
+              <>
+                <Download className="w-3.5 h-3.5" />
+                <span>Official CV (PDF)</span>
+              </>
+            )}
+          </button>
+
+          {/* Quick PDF Preview Modal button */}
+          {onOpenPdfPreview && (
+            <button
+              onClick={onOpenPdfPreview}
+              className={`hidden lg:inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium rounded-lg border transition-colors ${
+                isLight
+                  ? 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900'
+                  : 'border-zinc-700/80 bg-zinc-900 text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100'
+              }`}
+              title="Preview official PDF document"
+            >
+              <FileText className="w-3.5 h-3.5 text-blue-600" />
+              <span>Preview</span>
+            </button>
+          )}
 
           {/* Mobile hamburger menu toggle */}
           <button
@@ -196,20 +230,33 @@ export function Navbar({
           </div>
 
           <div className="pt-3 border-t border-slate-200 dark:border-zinc-800 flex flex-wrap items-center gap-2">
-            <a
-              href={cvPdfUrl}
-              download="Golam_Mahmud_IT_Officer_CV.pdf"
-              className="flex-1 inline-flex justify-center items-center gap-1.5 py-2 text-xs font-semibold text-slate-800 bg-slate-100 rounded-lg"
+            <button
+              onClick={(e) => {
+                handleDownloadCv(e);
+              }}
+              className="flex-1 inline-flex justify-center items-center gap-1.5 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg"
             >
-              <Download className="w-3.5 h-3.5 text-blue-600" />
-              Download PDF CV
-            </a>
+              <Download className="w-3.5 h-3.5" />
+              <span>{downloadSuccess ? 'Downloaded!' : 'Download PDF CV'}</span>
+            </button>
+            {onOpenPdfPreview && (
+              <button
+                onClick={() => {
+                  onOpenPdfPreview();
+                  setMobileMenuOpen(false);
+                }}
+                className="flex-1 inline-flex justify-center items-center gap-1.5 py-2 text-xs font-medium text-slate-700 dark:text-zinc-200 bg-slate-100 dark:bg-zinc-800 rounded-lg"
+              >
+                <FileText className="w-3.5 h-3.5 text-blue-600" />
+                <span>Preview PDF</span>
+              </button>
+            )}
             <button
               onClick={() => {
                 onOpenEditorModal();
                 setMobileMenuOpen(false);
               }}
-              className="flex-1 inline-flex justify-center items-center gap-1.5 py-2 text-xs font-medium text-slate-700 bg-slate-100 rounded-lg"
+              className="w-full inline-flex justify-center items-center gap-1.5 py-2 text-xs font-medium text-slate-700 dark:text-zinc-300 bg-slate-100 dark:bg-zinc-800/60 rounded-lg"
             >
               <Sliders className="w-3.5 h-3.5 text-blue-600" />
               Customize Info

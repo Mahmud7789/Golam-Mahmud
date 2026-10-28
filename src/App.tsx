@@ -10,6 +10,7 @@ import { DigitalCVView } from './components/DigitalCVView';
 import { ContactSection } from './components/ContactSection';
 import { DeployModal } from './components/DeployModal';
 import { LiveEditorModal } from './components/LiveEditorModal';
+import { PdfPreviewModal } from './components/PdfPreviewModal';
 import { Footer } from './components/Footer';
 
 export default function App() {
@@ -26,7 +27,7 @@ export default function App() {
 
   const [profile, setProfile] = useState<PortfolioProfile>(() => {
     try {
-      const saved = localStorage.getItem('golam_mahmud_cv_data_v7');
+      const saved = localStorage.getItem('golam_mahmud_cv_data_v15');
       if (saved) {
         const parsed = JSON.parse(saved);
         return {
@@ -34,6 +35,7 @@ export default function App() {
           title: initialPortfolioData.title,
           editorialKicker: initialPortfolioData.editorialKicker,
           avatarUrl: initialPortfolioData.avatarUrl,
+          cvPdfUrl: initialPortfolioData.cvPdfUrl,
           socials: {
             ...parsed.socials,
             github: initialPortfolioData.socials.github,
@@ -51,6 +53,7 @@ export default function App() {
   const [currentView, setCurrentView] = useState<'portfolio' | 'cv'>('portfolio');
   const [deployModalOpen, setDeployModalOpen] = useState(false);
   const [editorModalOpen, setEditorModalOpen] = useState(false);
+  const [pdfPreviewModalOpen, setPdfPreviewModalOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -69,7 +72,7 @@ export default function App() {
 
   useEffect(() => {
     try {
-      localStorage.setItem('golam_mahmud_cv_data_v7', JSON.stringify(profile));
+      localStorage.setItem('golam_mahmud_cv_data_v15', JSON.stringify(profile));
     } catch {
       // ignore
     }
@@ -102,6 +105,7 @@ export default function App() {
         }}
         onOpenDeployModal={() => setDeployModalOpen(true)}
         onOpenEditorModal={() => setEditorModalOpen(true)}
+        onOpenPdfPreview={() => setPdfPreviewModalOpen(true)}
         cvPdfUrl={profile.cvPdfUrl}
       />
 
@@ -114,6 +118,7 @@ export default function App() {
               setCurrentView('portfolio');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
+            onOpenPdfPreview={() => setPdfPreviewModalOpen(true)}
           />
         ) : (
           <>
@@ -126,6 +131,7 @@ export default function App() {
               }}
               onOpenDeploy={() => setDeployModalOpen(true)}
               onOpenEditor={() => setEditorModalOpen(true)}
+              onOpenPdfPreview={() => setPdfPreviewModalOpen(true)}
             />
 
             <ExperienceSection
@@ -177,6 +183,13 @@ export default function App() {
         onClose={() => setEditorModalOpen(false)}
         profile={profile}
         onSave={handleSaveProfile}
+      />
+
+      {/* Official 3-Page CV PDF Preview & Direct Download Modal */}
+      <PdfPreviewModal
+        isOpen={pdfPreviewModalOpen}
+        onClose={() => setPdfPreviewModalOpen(false)}
+        theme={theme}
       />
     </div>
   );

@@ -1,5 +1,7 @@
-import { Download, FileText, Github, Linkedin, Mail, MapPin, Phone, ShieldCheck } from 'lucide-react';
+import { useState } from 'react';
+import { Download, FileText, Github, Linkedin, Mail, MapPin, Phone, ShieldCheck, CheckCircle, Eye } from 'lucide-react';
 import { PortfolioProfile } from '../types/portfolio';
+import { downloadCvPdf } from '../utils/cvDownloader';
 
 interface HeroProps {
   profile: PortfolioProfile;
@@ -7,10 +9,19 @@ interface HeroProps {
   onOpenCV: () => void;
   onOpenDeploy: () => void;
   onOpenEditor: () => void;
+  onOpenPdfPreview?: () => void;
 }
 
-export function Hero({ profile, theme, onOpenCV, onOpenDeploy }: HeroProps) {
+export function Hero({ profile, theme, onOpenCV, onOpenDeploy, onOpenPdfPreview }: HeroProps) {
+  const [downloadSuccess, setDownloadSuccess] = useState(false);
   const isLight = theme === 'light';
+
+  const handleDownloadCv = (e: React.MouseEvent) => {
+    e.preventDefault();
+    downloadCvPdf('Mahmud_IT_Officer.pdf');
+    setDownloadSuccess(true);
+    setTimeout(() => setDownloadSuccess(false), 2500);
+  };
 
   const scrollToContact = () => {
     const el = document.getElementById('contact');
@@ -116,14 +127,38 @@ export function Hero({ profile, theme, onOpenCV, onOpenDeploy }: HeroProps) {
 
             {/* Primary Action Buttons */}
             <div className="flex flex-wrap items-center gap-3">
-              <a
-                href={profile.cvPdfUrl}
-                download="Golam_Mahmud_IT_Officer_CV.pdf"
-                className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-xs whitespace-nowrap"
+              <button
+                onClick={handleDownloadCv}
+                className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 active:scale-95 transition-all shadow-xs whitespace-nowrap"
+                title="Download Mahmud's verified 3-page CV PDF"
               >
-                <Download className="w-4 h-4" />
-                <span>Download Official CV (PDF)</span>
-              </a>
+                {downloadSuccess ? (
+                  <>
+                    <CheckCircle className="w-4 h-4 text-emerald-200" />
+                    <span>Downloaded PDF!</span>
+                  </>
+                ) : (
+                  <>
+                    <Download className="w-4 h-4" />
+                    <span>Download Official CV (PDF)</span>
+                  </>
+                )}
+              </button>
+
+              {onOpenPdfPreview && (
+                <button
+                  onClick={onOpenPdfPreview}
+                  className={`inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium rounded-lg border transition-colors whitespace-nowrap ${
+                    isLight
+                      ? 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50'
+                      : 'border-zinc-700 bg-zinc-900 text-zinc-200 hover:bg-zinc-800'
+                  }`}
+                  title="Preview official PDF document"
+                >
+                  <Eye className={`w-4 h-4 ${isLight ? 'text-blue-600' : 'text-cyan-400'}`} />
+                  <span>Preview PDF</span>
+                </button>
+              )}
 
               <button
                 onClick={onOpenCV}
@@ -207,18 +242,18 @@ export function Hero({ profile, theme, onOpenCV, onOpenDeploy }: HeroProps) {
                     : 'border-zinc-800 bg-zinc-900/80'
                 }`}
               >
-                <div className="aspect-square relative overflow-hidden bg-[#0a0c10]">
+                <div className="aspect-square relative overflow-hidden bg-slate-100 dark:bg-zinc-950">
                   <img
                     src={profile.avatarUrl}
                     alt={profile.name}
                     referrerPolicy="no-referrer"
-                    className="w-full h-full object-cover object-center filter contrast-[1.02] group-hover:scale-[1.02] transition-transform duration-500"
+                    className="w-full h-full object-cover object-center filter contrast-[1.01] group-hover:scale-[1.02] transition-transform duration-500"
                   />
                   {/* Subtle contrast gradient scrim at bottom */}
                   <div
-                    className={`absolute inset-x-0 bottom-0 h-12 pointer-events-none ${
+                    className={`absolute inset-x-0 bottom-0 h-10 pointer-events-none ${
                       isLight
-                        ? 'bg-gradient-to-t from-slate-900/60 via-transparent to-transparent'
+                        ? 'bg-gradient-to-t from-black/20 via-transparent to-transparent'
                         : 'bg-gradient-to-t from-[#090a0f]/80 via-transparent to-transparent'
                     }`}
                   />

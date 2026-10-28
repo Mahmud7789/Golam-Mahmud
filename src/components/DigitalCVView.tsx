@@ -1,16 +1,26 @@
 import { useState } from 'react';
-import { Printer, Copy, Check, ArrowLeft, Download, Mail, MapPin, Phone, Github, Linkedin } from 'lucide-react';
+import { Printer, Copy, Check, ArrowLeft, Download, Mail, MapPin, Phone, Github, Linkedin, CheckCircle, Eye } from 'lucide-react';
 import { PortfolioProfile } from '../types/portfolio';
+import { downloadCvPdf } from '../utils/cvDownloader';
 
 interface DigitalCVViewProps {
   profile: PortfolioProfile;
   theme: 'light' | 'dark';
   onBackToPortfolio: () => void;
+  onOpenPdfPreview?: () => void;
 }
 
-export function DigitalCVView({ profile, theme, onBackToPortfolio }: DigitalCVViewProps) {
+export function DigitalCVView({ profile, theme, onBackToPortfolio, onOpenPdfPreview }: DigitalCVViewProps) {
   const [copiedText, setCopiedText] = useState(false);
+  const [downloadSuccess, setDownloadSuccess] = useState(false);
   const isLight = theme === 'light';
+
+  const handleDownloadCv = (e: React.MouseEvent) => {
+    e.preventDefault();
+    downloadCvPdf('Mahmud_IT_Officer.pdf');
+    setDownloadSuccess(true);
+    setTimeout(() => setDownloadSuccess(false), 2500);
+  };
 
   const handlePrint = () => {
     window.print();
@@ -104,15 +114,38 @@ ${p.liveUrl ? `Live URL: ${p.liveUrl}` : ''}`
         </button>
 
         <div className="flex flex-wrap items-center gap-2.5">
-          <a
-            href={profile.cvPdfUrl}
-            download="Golam_Mahmud_IT_Officer_CV.pdf"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors shadow-2xs"
+          <button
+            onClick={handleDownloadCv}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 active:scale-95 rounded-lg transition-all shadow-2xs"
             title="Download the exact official PDF CV attachment"
           >
-            <Download className="w-3.5 h-3.5" />
-            <span>Download Official PDF</span>
-          </a>
+            {downloadSuccess ? (
+              <>
+                <CheckCircle className="w-3.5 h-3.5 text-emerald-200" />
+                <span>Downloaded PDF!</span>
+              </>
+            ) : (
+              <>
+                <Download className="w-3.5 h-3.5" />
+                <span>Download Official PDF</span>
+              </>
+            )}
+          </button>
+
+          {onOpenPdfPreview && (
+            <button
+              onClick={onOpenPdfPreview}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors ${
+                isLight
+                  ? 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
+                  : 'bg-zinc-800 border-zinc-700 text-zinc-300 hover:bg-zinc-700'
+              }`}
+              title="Preview official PDF document"
+            >
+              <Eye className={`w-3.5 h-3.5 ${isLight ? 'text-blue-600' : 'text-cyan-400'}`} />
+              <span>Preview PDF</span>
+            </button>
+          )}
 
           <button
             onClick={handleCopyPlainText}
