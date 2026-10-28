@@ -34,6 +34,7 @@ export function DeployModal({ isOpen, onClose }: DeployModalProps) {
 
   const vercelJsonContent = `{
   "framework": "vite",
+  "installCommand": "npm install --legacy-peer-deps",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "rewrites": [
